@@ -1,30 +1,28 @@
 <script>
-import { fConfig } from '@/utils/f-config.js'
-import axiosAuth from '@/utils/axios-auth.js'
 import axiosDB from '@/utils/axios-db.js'
+import firestoreApp from '@/utils/firestore-config.js'
 
 export default {
   data () {
     return {
-      title: 'ลงทะเบียน คณะทำงานส่งเสริมศีลธรรมอำเภอ',
-      titleShort: 'ลงทะเบียน คทง.สศ.อำเภอ',
+      title: 'คีย์ผลงานชวนเปิดบ้านสวดธรรมจักร',
+      titleShort: 'ผลงานชวนเปิดบ้านสวดธรรมจักร',
       errorText: 'กรุณากรอกข้อมูลในช่องที่กำหนด',
       isLoading: false,
       isLoading2: false,
       items: [],
-      itemsAddress: [],
+      itemsLeader: [],
+      dataFrom: '',
       model: null,
       search: null,
       searchAddress: null,
+      searchLeader: null,
       errorMessages: '',
       formHasErrors: false,
-      prefix: null,
-      firstname: null,
-      surname: null,
-      telnumber: null,
-      email: null,
-      fullname: null,
-      lineId: null,
+      memberTemp1: null,
+      memberTemp2: null,
+      memberTemp3: null,
+      memberTemp4: null,
       dialog: false,
       address: null,
       isMobile: false
@@ -43,18 +41,23 @@ export default {
     form () {
       return {
         campusId: this.model,
-        prefix: this.prefix,
-        firstname: this.firstname,
-        surname: this.surname,
-        fullname: `${this.prefix}${this.firstname} ${this.surname}`,
-        telnumber: this.telnumber,
-        email: this.email,
-        lineId: this.lineId,
-        addressId: this.address
+        dmjInviterId: this.address.userId,
+        dmjInviterFullname: this.address.fullname,
+        keyFrom: this.dataFrom,
+        dmjInvitedInfo: {
+          first: this.memberTemp1,
+          second: this.memberTemp2,
+          third: this.memberTemp3,
+          fourth: this.memberTemp4
+        }
       }
     },
     registerName () {
-      return this.$store.getters['center/getUsername']
+      if (this.address) {
+        return `${this.address.prefix}${this.address.firstname}`
+      }
+
+      return ''
     }
   },
   watch: {
@@ -62,16 +65,16 @@ export default {
       if (this.model === null || this.model === undefined) {
         this.isLoading = true
 
-        axiosDB.get('/campus.json?orderBy="key"&startAt="' + val + '"&limitToFirst=5')
+        axiosDB.get('/province.json?orderBy="address_key"&startAt="' + val + '"&limitToFirst=5')
           .then(res => {
             const idata = res.data
-            const campus = []
+            const provinces = []
             Object.keys(idata).forEach(i => {
-              const camp = idata[i]
-              camp.id = i
-              campus.push(camp)
+              const pro = idata[i]
+              pro.id = i
+              provinces.push(pro)
             })
-            this.items = campus
+            this.items = provinces
           })
           .catch(error => console.log(error))
           .finally(() => {
@@ -79,25 +82,24 @@ export default {
           })
       }
     },
-    searchAddress (val2) {
-      if (this.address === null || this.address === undefined) {
-        this.isLoading2 = true
-        axiosDB.get('/address.json?orderBy="address_key"&startAt="' + val2 + '"&limitToFirst=5')
-          .then(res => {
-            const adata = res.data
-            const addressArray = []
-            Object.keys(adata).forEach(a => {
-              const receiveAddress = adata[a]
-              receiveAddress.id = a
-              addressArray.push(receiveAddress)
+    model (val) {
+      return firestoreApp.collection('dmjCampusRegister').doc(`${val}`).collection('usersCampus')
+        .get()
+        .then(res => {
+          this.itemsLeader = []
+          console.log(res.size)
+          if (res.size > 0) {
+            // check data fetch to dropdown
+            let result = []
+            res.forEach(x => {
+              let a = x.data()
+              a['userId'] = x.id
+              result.push(a)
             })
-            this.itemsAddress = addressArray
-          })
-          .catch(error => console.log(error))
-          .finally(() => {
-            this.isLoading2 = false
-          })
-      }
+            this.itemsLeader = result
+          }
+        })
+        .catch(error => console.log(error))
     }
   },
   methods: {
@@ -121,30 +123,23 @@ export default {
       if (this.$refs.forms.validate()) {
         this.signupNewUser()
         // if send data finished!!  ++reset Form+
-        this.resetForm()
         this.dialog = true
       }
     },
+    closeDialog () {
+      this.resetForm()
+      this.dialog = false
+    },
     async signupNewUser () {
       const formData = this.form
-      let token = null
+      const idInviter = this.form.dmjInviterId
+      const idCampusInviter = this.form.campusId
 
-      await axiosAuth.post(`/signupNewUser?key=${fConfig.apiKey}`, {
-        email: this.email,
-        password: this.telnumber,
-        returnSecureToken: true
+      this.$store.dispatch('dmj/updateUser', {
+        id: idInviter,
+        campId: idCampusInviter
       })
-        .then(res => {
-          console.log(res)
-          token = res.data.idToken
-          let user = res.data.email
-          let id = res.data.localId
-          formData['uuid'] = id
-          this.$store.dispatch('center/updateUser', { token, user })
-          this.$store.dispatch('center/insertCenterToDb', formData)
-          // this.saveDataToRTDB(formData)
-        })
-        .catch(error => console.log(error))
+      this.$store.dispatch('dmj/insertInviterToDb', formData)
     },
     async saveDataToRTDB (data) {
       try {
@@ -174,17 +169,19 @@ export default {
           </v-flex>
         </v-card-title>
         <span class="pa-4">
-          <strong class="indigo--text">สำหรับลงทะเบียนคณะทำงานประจำอำเภอ</strong>
+          <strong class="indigo--text">สำหรับคีย์ผลงาน ชวนเปิดบ้านสวดธรรมจักร</strong>
         </span>
         <p class="px-5">
           <br />
-          โดยการพิมพ์เลือกชื่อศูนย์ที่สังกัด (ลงทะเบียนอำเภอ ตามที่ คณะทำงานส่งเสริมศีลธรรมจังหวัด มอบหมาย) พร้อมทั้งกรอกรายละเอียดทุกช่อง
-        </p>
-        <p class="px-5">
-          เมื่อลงทะเบียนเสร็จแล้วท่านสามารถเข้าห้อง <strong class="green--text">LINE "G-center"</strong> เพื่อสอบถามรายละเอียดเพิ่มเติมต่อไป
+          กรอกผลงาน ที่ไปชวนเปิดบ้านสวดธรรมจักร ครบ 20 หลัง แต่คัดเลือกมาเฉพาะคนที่จะเป็นทีมงานผู้ช่วย 4 คนตามแบบฟอร์มข้างล่าง
+          เมื่อกรอกเสร็จติดต่อรับพระของขวัญที่ผู้ประสานงานจังหวัด ในเดือนถัดไป
         </p>
         <v-form ref="forms" lazy-validation>
           <v-card-text>
+            <v-radio-group v-model="dataFrom" row>
+              <v-radio label="คีย์จากส่วนกลาง" value="ส่วนกลาง"></v-radio>
+              <v-radio label="คีย์จากจังหวัด" value="จังหวัด"></v-radio>
+            </v-radio-group>
             <v-autocomplete
               v-model="model"
               :items="items"
@@ -197,9 +194,9 @@ export default {
               clearable
               hide-details
               hide-selected
-              item-text="campus_name"
+              item-text="address_lv2_name"
               item-value="id"
-              label="เลือกศูนย์ตามอำเภอ..."
+              label="เลือกจังหวัดที่ตั้ง..."
               solo
             >
               <template slot="no-data">
@@ -220,115 +217,7 @@ export default {
                   class="white--text"
                 >
                   <v-icon left>business</v-icon>
-                  <span v-text="item.campus_name"></span>
-                </v-chip>
-              </template>
-              <template
-                slot="item"
-                slot-scope="{ item, tile }"
-              >
-                <v-list-tile-avatar
-                  color="indigo"
-                  class="headline font-weight-light white--text"
-                >
-                  {{ item.campus_name.charAt(0) }}
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title v-text="item.campus_name"></v-list-tile-title>
-                  <v-list-tile-sub-title v-text="item.province_name"></v-list-tile-sub-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-icon>fa-google</v-icon>
-                </v-list-tile-action>
-              </template>
-            </v-autocomplete>
-            <v-divider class="mt-3" dark></v-divider>
-            <v-text-field
-              ref="prefix"
-              v-model="prefix"
-              :rules="[() => !!prefix || errorText]"
-              :error-messages="errorMessages"
-              label="คำนำหน้า"
-              required
-            ></v-text-field>
-            <v-text-field
-              ref="firstname"
-              v-model="firstname"
-              :rules="[() => !!firstname || errorText]"
-              :error-messages="errorMessages"
-              label="ชื่อ"
-              required
-            ></v-text-field>
-            <v-text-field
-              ref="surname"
-              v-model="surname"
-              :rules="[() => !!surname || errorText]"
-              :error-messages="errorMessages"
-              label="นามสกุล หรือ ฉายา"
-              required
-            ></v-text-field>
-            <v-text-field
-              ref="telnumber"
-              v-model="telnumber"
-              :rules="[() => !!telnumber || errorText]"
-              :error-messages="errorMessages"
-              label="เบอร์โทรศัพท์"
-              mask="phone"
-              required
-            ></v-text-field>
-            <v-text-field
-              ref="email"
-              v-model="email"
-              :rules="[v => !!v || errorText, v => /.+@gmail.com/.test(v) || 'กรุณาใส่เป็น G-mail (test@gmail.com)']"
-              :error-messages="errorMessages"
-              label="Email"
-              required
-            ></v-text-field>
-            <v-text-field
-              ref="lineId"
-              v-model="lineId"
-              :rules="[() => !!lineId || errorText]"
-              :error-messages="errorMessages"
-              label="LINE ID สำหรับเข้ากลุ่ม G-center"
-              required
-            ></v-text-field>
-            <p/>
-            <v-autocomplete
-              v-model="address"
-              :items="itemsAddress"
-              :loading="isLoading2"
-              :search-input.sync="searchAddress"
-              :rules="[() => !!address || errorText]"
-              :error-messages="errorMessages"
-              background-color="blue-grey lighten-5"
-              chips
-              clearable
-              hide-details
-              hide-selected
-              item-text="address_name"
-              item-value="id"
-              label="ที่อยู่"
-              box
-            >
-              <template slot="no-data">
-                <v-list-tile>
-                  <v-list-tile-title>
-                    พิมพ์อำเภอที่ตั้ง
-                    <strong>(ไม่ต้องพิมพ์"อำเภอ")</strong>
-                  </v-list-tile-title>
-                </v-list-tile>
-              </template>
-              <template
-                slot="selection"
-                slot-scope="{ item, selected }"
-              >
-                <v-chip
-                  :selected="selected"
-                  color="blue darken-3"
-                  class="white--text"
-                >
-                  <v-icon left>home</v-icon>
-                  <span v-text="item.address_name"></span>
+                  <span v-text="item.address_lv2_name"></span>
                 </v-chip>
               </template>
               <template
@@ -342,14 +231,83 @@ export default {
                   {{ item.address_key.charAt(0) }}
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                  <v-list-tile-title v-text="item.address_lv3_name"></v-list-tile-title>
-                  <v-list-tile-sub-title v-text="item.address_lv2_name"></v-list-tile-sub-title>
+                  <v-list-tile-title v-text="item.address_lv2_name"></v-list-tile-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
                   <v-icon>fa-google</v-icon>
                 </v-list-tile-action>
               </template>
             </v-autocomplete>
+            <v-divider class="mt-3" dark></v-divider>
+            <p/>
+            <v-autocomplete
+              v-model="address"
+              :items="itemsLeader"
+              :loading="isLoading2"
+              :search-input.sync="searchLeader"
+              :rules="[() => !!address || errorText]"
+              :error-messages="errorMessages"
+              background-color="blue-grey lighten-5"
+              chips
+              clearable
+              hide-details
+              hide-selected
+              item-text="fullname"
+              return-object
+              label="ชื่อผู้นำบ้านสวดธรรมจักร"
+              box
+            >
+              <template slot="no-data">
+                <v-list-tile>
+                  <v-list-tile-title>
+                    พิมพ์ชื่อทีละตัว
+                    <strong>(โดยไม่ต้องพิมพ์คำนำหน้า)</strong>
+                  </v-list-tile-title>
+                </v-list-tile>
+              </template>
+              <template
+                slot="selection"
+                slot-scope="{ item, selected }"
+              >
+                <v-chip
+                  :selected="selected"
+                  color="blue darken-3"
+                  class="white--text"
+                >
+                  <v-icon left>person</v-icon>
+                  <span v-text="item.fullname"></span>
+                </v-chip>
+              </template>
+              <template
+                slot="item"
+                slot-scope="{ item, tile }"
+              >
+                <v-list-tile-content>
+                  <v-list-tile-title v-text="item.fullname"></v-list-tile-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <v-icon>fa-google</v-icon>
+                </v-list-tile-action>
+              </template>
+            </v-autocomplete>
+            <v-divider class="mt-3" dark></v-divider>
+            <p/>
+            <v-text-field
+              v-model="memberTemp1"
+              label="ชื่อผู้ช่วยคนที่ 1"
+            ></v-text-field>
+            <v-text-field
+              v-model="memberTemp2"
+              label="ชื่อผู้ช่วยคนที่ 2"
+            ></v-text-field>
+            <v-text-field
+              v-model="memberTemp3"
+              label="ชื่อผู้ช่วยคนที่ 3"
+            ></v-text-field>
+            <v-text-field
+              v-model="memberTemp4"
+              label="ชื่อผู้ช่วยคนที่ 4"
+            ></v-text-field>
           </v-card-text>
           <v-divider class="mt-4"></v-divider>
           <v-card-actions>
@@ -391,17 +349,17 @@ export default {
                 <span>-------กดที่ปุ่ม<strong class="indigo--text">สำหรับผู้ใช้มือถือ</strong> หรือ สแกน QRcode <strong class="indigo--text">สำหรับเว็บไซต์</strong>----------</span>
               </v-flex>
               <v-flex xs12 sm6 md4>
-                <v-btn color="green white--text" href="https://line.me/R/ti/g/7ruFaWVx8O">เข้าร่วม LINE Group</v-btn>
+                <v-btn color="green white--text" href="https://line.me/ti/g2/cmyRwDMCluG-qIBOa55lzg">เข้าร่วม LINE Group</v-btn>
               </v-flex>
               <v-responsive :aspect-ratio="1/0.5">
-                <img src="@/assets/qrLineGroup.png"/>
+                <img src="@/assets/qrLineGroup.jpg"/>
               </v-responsive>
             </v-layout>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click.native="dialog = false">Close</v-btn>
+          <v-btn color="blue darken-1" flat @click.native="closeDialog">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

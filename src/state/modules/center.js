@@ -30,18 +30,12 @@ const actions = {
   },
   async insertCenterToDb ({ commit }, data) {
     const inputData = data
+    inputData['lastUpdated'] = getserverTimestamp()
     try {
       const newUserCenter = await firestoreApp
         .collection('usersCenter')
-        .add(data)
-        .then(docRef => {
-          docRef.update({
-            lastUpdated: getserverTimestamp(),
-            id: docRef.id
-          })
-          inputData['id'] = docRef.id
-          commit('setUserInfo', inputData)
-        })
+        .doc(`${data.uuid}`)
+        .set(inputData)
 
       let campusRegister = {}
       let campId = inputData.campusId
@@ -49,7 +43,7 @@ const actions = {
       const campRegis = await firestoreApp
         .collection('campusRegister')
         .doc(campId)
-        .set(campusRegister, {merge: true})
+        .set(campusRegister, { merge: true })
       console.log(campRegis)
       console.log(newUserCenter)
     } catch (error) { console.log(error) }

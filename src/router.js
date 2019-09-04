@@ -5,8 +5,8 @@ import Home from './views/Home.vue'
 Vue.use(Router)
 
 export default new Router({
-  // mode: 'history',
-  // base: process.env.BASE_URL,
+  mode: 'history',
+  base: process.env.BASE_URL,
   routes: [
     {
       path: '/',
@@ -27,6 +27,24 @@ export default new Router({
       name: 'centersignup',
       component: () =>
         import('./views/CenterSignUp.vue')
+    },
+    {
+      path: '/dmjsignup',
+      name: 'dmjsignup',
+      component: () =>
+        import('./views/DmjSignUp.vue')
+    },
+    {
+      path: '/dmjinvited',
+      name: 'dmjinvited',
+      component: () =>
+        import('./views/DmjInvited.vue')
+    },
+    {
+      path: '/leadersignup',
+      name: 'leadersignup',
+      component: () =>
+        import('./views/LeaderSignUp.vue')
     }
   ]
 })

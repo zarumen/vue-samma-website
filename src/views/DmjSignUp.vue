@@ -1,13 +1,11 @@
 <script>
-import { fConfig } from '@/utils/f-config.js'
-import axiosAuth from '@/utils/axios-auth.js'
 import axiosDB from '@/utils/axios-db.js'
 
 export default {
   data () {
     return {
-      title: 'ลงทะเบียน คณะทำงานส่งเสริมศีลธรรมอำเภอ',
-      titleShort: 'ลงทะเบียน คทง.สศ.อำเภอ',
+      title: 'ลงทะเบียน บ้านสวดธรรมจักร',
+      titleShort: 'ลงทะเบียน บ้านสวดธรรมจักร',
       errorText: 'กรุณากรอกข้อมูลในช่องที่กำหนด',
       isLoading: false,
       isLoading2: false,
@@ -42,19 +40,19 @@ export default {
   computed: {
     form () {
       return {
-        campusId: this.model,
+        invitePerson: this.model,
         prefix: this.prefix,
         firstname: this.firstname,
         surname: this.surname,
         fullname: `${this.prefix}${this.firstname} ${this.surname}`,
         telnumber: this.telnumber,
-        email: this.email,
+        campusId: this.address.address_lv2_id,
         lineId: this.lineId,
-        addressId: this.address
+        address: this.address
       }
     },
     registerName () {
-      return this.$store.getters['center/getUsername']
+      return `${this.prefix}${this.firstname}`
     }
   },
   watch: {
@@ -85,6 +83,7 @@ export default {
         axiosDB.get('/address.json?orderBy="address_key"&startAt="' + val2 + '"&limitToFirst=5')
           .then(res => {
             const adata = res.data
+            console.log(adata)
             const addressArray = []
             Object.keys(adata).forEach(a => {
               const receiveAddress = adata[a]
@@ -109,6 +108,10 @@ export default {
       // clear forms
       this.$refs.forms.reset()
     },
+    closeDialog () {
+      this.resetForm()
+      this.dialog = false
+    },
     submit () {
       // check form blanked to show Reset Form Button
       this.formHasErrors = false
@@ -121,30 +124,26 @@ export default {
       if (this.$refs.forms.validate()) {
         this.signupNewUser()
         // if send data finished!!  ++reset Form+
-        this.resetForm()
         this.dialog = true
       }
     },
     async signupNewUser () {
       const formData = this.form
-      let token = null
 
-      await axiosAuth.post(`/signupNewUser?key=${fConfig.apiKey}`, {
-        email: this.email,
-        password: this.telnumber,
-        returnSecureToken: true
-      })
-        .then(res => {
-          console.log(res)
-          token = res.data.idToken
-          let user = res.data.email
-          let id = res.data.localId
-          formData['uuid'] = id
-          this.$store.dispatch('center/updateUser', { token, user })
-          this.$store.dispatch('center/insertCenterToDb', formData)
-          // this.saveDataToRTDB(formData)
-        })
-        .catch(error => console.log(error))
+      this.$store.dispatch('dmj/insertDmjToDb', formData)
+
+      // await axiosAuth.post(`/signupNewUser?key=${fConfig.apiKey}`, {
+      //   email: this.email,
+      //   password: this.telnumber,
+      //   returnSecureToken: true
+      // })
+      //   .then(res => {
+      //     console.log(res)
+      //     token = res.data.idToken
+      //     this.$store.dispatch('dmj/insertDmjToDb', formData)
+      //     // this.saveDataToRTDB(formData)
+      //   })
+      //   .catch(error => console.log(error))
     },
     async saveDataToRTDB (data) {
       try {
@@ -174,74 +173,17 @@ export default {
           </v-flex>
         </v-card-title>
         <span class="pa-4">
-          <strong class="indigo--text">สำหรับลงทะเบียนคณะทำงานประจำอำเภอ</strong>
+          <strong class="indigo--text">สำหรับลงทะเบียนเปิดบ้านสวดธรรมจักร</strong>
         </span>
         <p class="px-5">
           <br />
-          โดยการพิมพ์เลือกชื่อศูนย์ที่สังกัด (ลงทะเบียนอำเภอ ตามที่ คณะทำงานส่งเสริมศีลธรรมจังหวัด มอบหมาย) พร้อมทั้งกรอกรายละเอียดทุกช่อง
+          เมื่อได้รับธรรมาวุธ พร้อมทั้งใบสมัครให้ กรอกรายละเอียดส่วนตัว เพื่อใช้ในการลงทะเบียนกับทางส่วนกลาง
         </p>
         <p class="px-5">
-          เมื่อลงทะเบียนเสร็จแล้วท่านสามารถเข้าห้อง <strong class="green--text">LINE "G-center"</strong> เพื่อสอบถามรายละเอียดเพิ่มเติมต่อไป
+          เมื่อลงทะเบียนเสร็จแล้วท่านสามารถเข้าแอด <strong class="green--text">LINE กลุ่ม "บ้านสวดธรรมจักร"</strong> เพื่อสอบถามรายละเอียดกิจกรรมเพิ่มเติมต่อไป
         </p>
         <v-form ref="forms" lazy-validation>
           <v-card-text>
-            <v-autocomplete
-              v-model="model"
-              :items="items"
-              :loading="isLoading"
-              :search-input.sync="search"
-              :rules="[() => !!model || 'This field is required']"
-              :error-messages="errorMessages"
-              background-color="light-blue lighten-5"
-              chips
-              clearable
-              hide-details
-              hide-selected
-              item-text="campus_name"
-              item-value="id"
-              label="เลือกศูนย์ตามอำเภอ..."
-              solo
-            >
-              <template slot="no-data">
-                <v-list-tile>
-                  <v-list-tile-title>
-                    พิมพ์ชื่อศูนย์ตามอำเภอ
-                    <strong>(ไม่ต้องพิมพ์"อำเภอ")</strong>
-                  </v-list-tile-title>
-                </v-list-tile>
-              </template>
-              <template
-                slot="selection"
-                slot-scope="{ item, selected }"
-              >
-                <v-chip
-                  :selected="selected"
-                  color="light-blue darken-2"
-                  class="white--text"
-                >
-                  <v-icon left>business</v-icon>
-                  <span v-text="item.campus_name"></span>
-                </v-chip>
-              </template>
-              <template
-                slot="item"
-                slot-scope="{ item, tile }"
-              >
-                <v-list-tile-avatar
-                  color="indigo"
-                  class="headline font-weight-light white--text"
-                >
-                  {{ item.campus_name.charAt(0) }}
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title v-text="item.campus_name"></v-list-tile-title>
-                  <v-list-tile-sub-title v-text="item.province_name"></v-list-tile-sub-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-icon>fa-google</v-icon>
-                </v-list-tile-action>
-              </template>
-            </v-autocomplete>
             <v-divider class="mt-3" dark></v-divider>
             <v-text-field
               ref="prefix"
@@ -277,20 +219,16 @@ export default {
               required
             ></v-text-field>
             <v-text-field
-              ref="email"
-              v-model="email"
-              :rules="[v => !!v || errorText, v => /.+@gmail.com/.test(v) || 'กรุณาใส่เป็น G-mail (test@gmail.com)']"
-              :error-messages="errorMessages"
-              label="Email"
-              required
-            ></v-text-field>
-            <v-text-field
               ref="lineId"
               v-model="lineId"
               :rules="[() => !!lineId || errorText]"
               :error-messages="errorMessages"
-              label="LINE ID สำหรับเข้ากลุ่ม G-center"
+              label="LINE ID สำหรับเข้ากลุ่ม บ้านสวดธรรมจักร"
               required
+            ></v-text-field>
+            <v-text-field
+              v-model="model"
+              label="ชื่อผู้ชวน"
             ></v-text-field>
             <p/>
             <v-autocomplete
@@ -305,8 +243,8 @@ export default {
               clearable
               hide-details
               hide-selected
+              return-object
               item-text="address_name"
-              item-value="id"
               label="ที่อยู่"
               box
             >
@@ -385,23 +323,23 @@ export default {
                 <span class="headline">{{ registerName }}ได้ทำการลงทะเบียนแล้ว!</span>
               </v-flex>
               <v-flex>
-                <span>สำหรับผู้ที่ลงทะเบียนสามารถเข้าห้องไลน์ G-center กลางเพื่อรับทราบข้อมูลข่าวสารได้ 2 ช่องทาง คือ </span>
+                <span>สำหรับผู้ที่ลงทะเบียนสามารถเข้าห้องไลน์ [บ้านสวดธรรมจักร] กลางเพื่อรับทราบข้อมูลข่าวสารได้ 2 ช่องทาง คือ </span>
               </v-flex>
               <v-flex>
                 <span>-------กดที่ปุ่ม<strong class="indigo--text">สำหรับผู้ใช้มือถือ</strong> หรือ สแกน QRcode <strong class="indigo--text">สำหรับเว็บไซต์</strong>----------</span>
               </v-flex>
               <v-flex xs12 sm6 md4>
-                <v-btn color="green white--text" href="https://line.me/R/ti/g/7ruFaWVx8O">เข้าร่วม LINE Group</v-btn>
+                <v-btn color="green white--text" href="https://line.me/ti/g2/cmyRwDMCluG-qIBOa55lzg">เข้าร่วม LINE Group</v-btn>
               </v-flex>
               <v-responsive :aspect-ratio="1/0.5">
-                <img src="@/assets/qrLineGroup.png"/>
+                <img src="@/assets/qrLineGroup.jpg"/>
               </v-responsive>
             </v-layout>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click.native="dialog = false">Close</v-btn>
+          <v-btn color="blue darken-1" flat @click.native="closeDialog">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

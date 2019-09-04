@@ -10,6 +10,17 @@ export default {
     return {
       fixed: false
     }
+  },
+  beforeCreate () {
+    this.$liff.init(
+      data => {
+        const userId = data.context.userId
+        console.log(userId)
+      },
+      error => {
+        console.log(error)
+      }
+    )
   }
 }
 </script>

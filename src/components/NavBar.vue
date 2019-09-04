@@ -1,4 +1,6 @@
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   data () {
     return {
@@ -12,6 +14,21 @@ export default {
         },
         {
           icon: 'bubble_chart',
+          title: 'สมัครเปิดบ้านสวดฯ',
+          link: '/dmjsignup'
+        },
+        {
+          icon: 'bubble_chart',
+          title: 'กรอกข้อมูล ชวนเปิดบ้านสวดฯ',
+          link: '/dmjinvited'
+        },
+        {
+          icon: 'bubble_chart',
+          title: 'ขุนพลธรรมจักร',
+          link: '/leadersignup'
+        },
+        {
+          icon: 'bubble_chart',
           title: 'ข้อมูลเพิ่มเติม',
           link: '/about'
         }
@@ -19,7 +36,23 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'ชมรมกตัญญูบูชา(แก้ไข)'
+      title: ''
+    }
+  },
+  computed: {
+    ...mapGetters('dmj', ['getUser', 'checkUserProfile']),
+    getProfilePicUrl () {
+      if (this.checkUserProfile) return this.getUser.pictureUrl
+
+      return null
+    },
+    profileName () {
+      if (this.checkUserProfile) return this.getUser.displayName
+
+      return null
+    },
+    checkPicUrl () {
+      return !!this.getProfilePicUrl
     }
   }
 }
@@ -56,18 +89,30 @@ export default {
       color="secondary"
     >
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <!-- <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
-      </v-btn> -->
       <img src="@/assets/gtuFavicon.png" height="36px"/>
-      <!-- <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>remove</v-icon>
-      </v-btn> -->
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
-      <!-- <v-btn flat>
-        Login
-      </v-btn> -->
+      <v-toolbar-items>
+        <v-list class="transparent">
+          <v-list-tile v-if="checkUserProfile" avatar>
+            <v-list-tile-avatar>
+              <v-img
+                v-if="checkPicUrl"
+                :src="getProfilePicUrl"
+                max-height="36"
+              />
+              <img
+                v-else
+                src="https://randomuser.me/api/portraits/men/85.jpg"
+              />
+            </v-list-tile-avatar>
+
+            <v-list-tile-content>
+              <v-list-tile-title>{{ profileName }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </v-toolbar-items>
     </v-toolbar>
     <v-content>
       <slot/>

@@ -5,6 +5,7 @@ import App from './App.vue'
 import router from './router'
 import store from './state/store'
 
+Vue.prototype.$liff = window.liff
 Vue.config.productionTip = false
 
 new Vue({
