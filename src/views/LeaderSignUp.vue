@@ -173,61 +173,67 @@ export default {
 </script>
 
 <template>
-  <v-layout justify-center align-center>
-    <v-flex xs12 sm10 md8 lg6>
-      <v-flex class="transparent" v-show="!checkUserProfile">
-        <v-btn large color="success" style="width: 90%;" round @click="getProfile">Login เพื่อคีย์ข้อมูล</v-btn>
-        <v-flex v-show="false" xs12 sm8 md6>
+  <v-row>
+    <v-col cols="12">
+      <v-row class="transparent" justify="center" v-show="!checkUserProfile">
+        <v-col class="justify-space-around" cols="4">
+          <v-btn large class="success" style="width: 100%;" rounded @click="getProfile">Login เพื่อคีย์ข้อมูล</v-btn>
+        </v-col>
+        <v-col v-show="false" cols="12" sm8 md6>
           <v-card id="profileinfo">
             <v-card-title><h2>Profile</h2></v-card-title>
             <div id="profilepicturediv"></div>
             <v-list dense>
-              <v-list-tile>
-                <v-list-tile-content>userId</v-list-tile-content>
-                <v-list-tile-content
+              <v-list-item>
+                <v-list-item-content>userId</v-list-item-content>
+                <v-list-item-content
                   class="align-end"
                   id="useridprofilefield"
-                ></v-list-tile-content>
-              </v-list-tile>
-              <v-list-tile>
-                <v-list-tile-content>displayName</v-list-tile-content>
-                <v-list-tile-content
+                ></v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>displayName</v-list-item-content>
+                <v-list-item-content
                   class="align-end"
                   id="displaynamefield"
-                ></v-list-tile-content>
-              </v-list-tile>
-              <v-list-tile>
-                <v-list-tile-content>statusMessage</v-list-tile-content>
-                <v-list-tile-content
+                ></v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>statusMessage</v-list-item-content>
+                <v-list-item-content
                   class="align-end"
                   id="statusmessagefield"
-                ></v-list-tile-content>
-              </v-list-tile>
-              <v-list-tile>
-                <v-list-tile-content>context.groupId</v-list-tile-content>
-                <v-list-tile-content
+                ></v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>context.groupId</v-list-item-content>
+                <v-list-item-content
                   class="align-end"
                   id="groupidfield"
-                ></v-list-tile-content>
-              </v-list-tile>
+                ></v-list-item-content>
+              </v-list-item>
             </v-list>
           </v-card>
-        </v-flex>
-      </v-flex>
-      <v-card v-if="checkUserProfile">
+        </v-col>
+      </v-row>
+      <v-card
+        v-if="checkUserProfile"
+        class="mx-auto"
+        max-width="600"
+      >
         <v-card-title>
-          <v-flex>
+          <v-col cols="3">
             <img src="@/assets/gCenterFavicon.png" height="48px"/>
-          </v-flex>
-          <v-flex v-if="isMobile">
+          </v-col>
+          <v-col v-if="isMobile">
             <p class="headline">{{ titleShort }}</p>
-          </v-flex>
-          <v-flex v-else>
+          </v-col>
+          <v-col v-else>
             <p class="headline">{{ title }}</p>
-          </v-flex>
+          </v-col>
         </v-card-title>
         <span class="pa-4">
-          <strong class="indigo--text">สำหรับคีย์ผลงาน ชวนสวดธรรมจักร</strong>
+          <strong class="indigo--text">สำหรับคีย์ผลงาน ชวนสวดธรรมจักร 108 จบ</strong>
         </span>
         <p class="px-5">
           <br />
@@ -255,43 +261,38 @@ export default {
               label="เลือกจังหวัดที่ตั้ง..."
               solo
             >
-              <template slot="no-data">
-                <v-list-tile>
-                  <v-list-tile-title>
+              <template v-slot:no-data>
+                <v-list-item>
+                  <v-list-item-title>
                     พิมพ์ชื่อศูนย์ตามอำเภอ
                     <strong>(ไม่ต้องพิมพ์"อำเภอ")</strong>
-                  </v-list-tile-title>
-                </v-list-tile>
+                  </v-list-item-title>
+                </v-list-item>
               </template>
               <template
-                slot="selection"
-                slot-scope="{ item, selected }"
+                v-slot:selection="{ attr, item, on, selected }"
               >
                 <v-chip
-                  :selected="selected"
+                  v-bind="attr"
+                  :input-value="selected"
                   color="light-blue darken-2"
                   class="white--text"
+                  v-on="on"
                 >
                   <v-icon left>business</v-icon>
                   <span v-text="item.address_lv2_name"></span>
                 </v-chip>
               </template>
-              <template
-                slot="item"
-                slot-scope="{ item, tile }"
-              >
-                <v-list-tile-avatar
+              <template v-slot:item="{ item }">
+                <v-list-item-avatar
                   color="indigo"
                   class="headline font-weight-light white--text"
                 >
                   {{ item.address_key.charAt(0) }}
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title v-text="item.address_lv2_name"></v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-icon>fa-google</v-icon>
-                </v-list-tile-action>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title v-text="item.address_lv2_name"></v-list-item-title>
+                </v-list-item-content>
               </template>
             </v-autocomplete>
             <v-divider class="mt-3" dark></v-divider>
@@ -311,39 +312,34 @@ export default {
               item-text="fullname"
               return-object
               label="ผู้ทำหน้าที่ชวนสวดธรรมจักร 108 จบ"
-              box
+              filled
             >
-              <template slot="no-data">
-                <v-list-tile>
-                  <v-list-tile-title>
+              <template v-slot:no-data>
+                <v-list-item>
+                  <v-list-item-title>
                     พิมพ์ชื่อทีละตัว
                     <strong>(โดยไม่ต้องพิมพ์คำนำหน้า)</strong>
-                  </v-list-tile-title>
-                </v-list-tile>
+                  </v-list-item-title>
+                </v-list-item>
               </template>
               <template
-                slot="selection"
-                slot-scope="{ item, selected }"
+                v-slot:selection="{ attr, item, on, selected }"
               >
                 <v-chip
-                  :selected="selected"
+                  v-bind="attr"
+                  :input-value="selected"
                   color="blue darken-3"
                   class="white--text"
+                  v-on="on"
                 >
                   <v-icon left>person</v-icon>
                   <span v-text="item.fullname"></span>
                 </v-chip>
               </template>
-              <template
-                slot="item"
-                slot-scope="{ item, tile }"
-              >
-                <v-list-tile-content>
-                  <v-list-tile-title v-text="item.fullname"></v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-icon>fa-google</v-icon>
-                </v-list-tile-action>
+              <template v-slot:item="{ item }">
+                <v-list-item-content>
+                  <v-list-item-title v-text="item.fullname"></v-list-item-title>
+                </v-list-item-content>
               </template>
             </v-autocomplete>
             <v-divider class="mt-3" dark></v-divider>
@@ -357,15 +353,20 @@ export default {
               <v-card-text>
                 <v-text-field
                   ref="membername"
+                  prepend-icon="person"
                   v-model="membername"
                   :rules="[() => !!membername || errorText]"
                   :error-messages="errorMessages"
                   label="ชื่อ"
                   required
                 ></v-text-field>
-                <v-radio-group v-model="gender" row>
-                  <v-radio label="ชาย" value="Male"></v-radio>
-                  <v-radio label="หญิง" value="Female"></v-radio>
+                <v-radio-group
+                  v-model="gender"
+                  row
+                  mandatory
+                >
+                  <v-radio label="ชาย" color="red" value="Male"></v-radio>
+                  <v-radio label="หญิง" color="red" value="Female"></v-radio>
                 </v-radio-group>
                 <v-menu
                   ref="menu"
@@ -373,7 +374,6 @@ export default {
                   :close-on-content-click="false"
                   transition="scale-transition"
                   offset-y
-                  full-width
                   min-width="290px"
                 >
                   <template v-slot:activator="{ on }">
@@ -398,6 +398,7 @@ export default {
                   ref="telnumber"
                   v-model="telnumber"
                   label="เบอร์โทรศัพท์"
+                  prepend-icon="local_phone"
                   mask="phone"
                 ></v-text-field>
               </v-card-text>
@@ -405,7 +406,7 @@ export default {
           </v-card-text>
           <v-divider class="mt-4"></v-divider>
           <v-card-actions>
-            <v-btn color="blue darken-3" flat @click="resetForm">เคลียร์ฟอร์มกรอก</v-btn>
+            <v-btn color="blue darken-3" text @click="resetForm">เคลียร์ฟอร์มกรอก</v-btn>
             <v-spacer></v-spacer>
             <v-slide-x-reverse-transition>
               <v-tooltip
@@ -423,32 +424,32 @@ export default {
                 <span>Refresh form</span>
               </v-tooltip>
             </v-slide-x-reverse-transition>
-            <v-btn color="blue darken-3" flat @click="submit">ลงทะเบียน</v-btn>
+            <v-btn color="blue darken-3" text @click="submit">ลงทะเบียน</v-btn>
           </v-card-actions>
         </v-form>
       </v-card>
-    </v-flex>
+    </v-col>
     <v-dialog v-model="dialog" persistent max-width="400px">
       <v-card>
         <v-card-text>
           <v-container grid-list-md>
-            <v-layout column wrap align-center>
-              <v-flex xs12 sm6 md4>
+            <v-row column wrap align-center>
+              <v-col cols="12" sm6 md4>
                 <span class="title">{{ registerName }} ได้ทำการส่งข้อมูลแล้ว!</span>
-              </v-flex>
-              <v-flex text-xs-center>
+              </v-col>
+              <v-col text-xs-center>
                 <span>ตอนนี้คุณได้ชวนคนสวดธรรมจักร 108 จบแล้ว</span><br /><br />
                 <span class="display-1 red--text">{{ memberCount }} คน</span><br /><br />
                 <span class="headline red--text" v-if="memberCount > 9">ยินดีด้วยคุณได้ทำ<br>ภารกิจขั้นแรกสำเร็จแล้ว</span>
-              </v-flex>
-            </v-layout>
+              </v-col>
+            </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click.native="closeDialog">Close</v-btn>
+          <v-btn color="blue darken-1" text @click.native="closeDialog">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-layout>
+  </v-row>
 </template>

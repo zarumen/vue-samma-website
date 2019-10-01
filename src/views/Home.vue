@@ -11,8 +11,8 @@ export default {
 <template>
   <v-container fluid grid-list-md>
     <v-slide-y-transition mode="out-in">
-      <v-layout row wrap>
-        <v-flex xs12>
+      <v-row>
+        <v-col cols="12">
           <v-img
             :gradient="gradient"
             height="550px"
@@ -20,8 +20,8 @@ export default {
             src="https://4.bp.blogspot.com/-G2vKn8cT65A/WzcMLrp6HsI/AAAAAAAAQ68/ay2dl8sQxo4NcQ_FPc6S-GVsHaRZmluawCLcBGAs/s1600/001.jpg"
           >
             <v-container fill-height>
-              <v-layout align-center class="lightbox white--text">
-                <v-flex text-xs-center>
+              <v-row align-center class="lightbox white--text">
+                <v-col class="text-center">
                   <img src="@/assets/gtuLogoWithText.png">
                   <h3 class="display-2">ชมรมกตัญญูบูชา</h3>
                   <v-divider class="my-3"></v-divider>
@@ -35,41 +35,40 @@ export default {
                       </footer>
                     </blockquote>
                   </h2>
-                </v-flex>
-              </v-layout>
+                </v-col>
+              </v-row>
             </v-container>
           </v-img>
-        </v-flex>
-        <v-flex xs12 md6>
+        </v-col>
+        <v-col cols="12" md="6">
           <v-card class="cyan lighten-5 pa-4">
-            <v-layout align-center justify-center column wrap>
+            <v-row>
               <v-card-text>
-                <v-flex class="text-md-center">
+                <v-col class="text-center">
                   <h2>สำหรับศูนย์ประสานงานอำเภอ (G-center)</h2>
-                </v-flex>
+                </v-col>
               </v-card-text>
               <v-card-actions>
-                <v-btn color="primary" to="/centersignup">ลงทะเบียน</v-btn>
+                <v-btn color="primary" text to="/centersignup">ลงทะเบียน</v-btn>
               </v-card-actions>
-            </v-layout>
+            </v-row>
           </v-card>
-        </v-flex>
-        <v-flex xs12 md6>
+        </v-col>
+        <v-col cols="12" md="6">
           <v-card class="red lighten-5 pa-4">
-            <v-layout align-center justify-center column wrap>
+            <v-row class="align-center">
               <v-card-text>
-                <v-flex class="text-md-center">
-                  <h2>สำหรับชมรมกตัญญูบูชา (G-club)</h2>
-                </v-flex>
+                <v-col class="text-center">
+                  <h2>สำหรับข้อมูลผู้นำสวดธรรมจักร</h2>
+                </v-col>
               </v-card-text>
               <v-card-actions>
-                <!-- <v-btn color="accent">Click me!</v-btn>
-                <v-btn color="accent">Click me!</v-btn> -->
+                <v-btn text color="red">Click me!</v-btn>
               </v-card-actions>
-            </v-layout>
+            </v-row>
           </v-card>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-slide-y-transition>
   </v-container>
 </template>

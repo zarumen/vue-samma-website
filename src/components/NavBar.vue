@@ -60,42 +60,18 @@ export default {
 
 <template>
   <div>
-    <v-navigation-drawer
-      persistent
-      v-model="drawer"
-      enable-resize-watcher
-      app
-    >
-      <v-list>
-        <v-list-tile
-          value="true"
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.link"
-          router
-        >
-          <v-list-tile-action>
-            <v-icon v-html="item.icon"></v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title"></v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
-    <v-toolbar
-      app
+    <v-app-bar
       dark
-      color="secondary"
+      color="default"
     >
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <img src="@/assets/gtuFavicon.png" height="36px"/>
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-list class="transparent">
-          <v-list-tile v-if="checkUserProfile" avatar>
-            <v-list-tile-avatar>
+          <v-list-item v-if="checkUserProfile" avatar>
+            <v-list-item-avatar>
               <v-img
                 v-if="checkPicUrl"
                 :src="getProfilePicUrl"
@@ -105,33 +81,39 @@ export default {
                 v-else
                 src="https://randomuser.me/api/portraits/men/85.jpg"
               />
-            </v-list-tile-avatar>
+            </v-list-item-avatar>
 
-            <v-list-tile-content>
-              <v-list-tile-title>{{ profileName }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            <v-list-item-content>
+              <v-list-item-title>{{ profileName }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </v-toolbar-items>
-    </v-toolbar>
+    </v-app-bar>
+    <v-navigation-drawer
+      absolute
+      temporary
+      v-model="drawer"
+    >
+      <v-list>
+        <v-list-item
+          value="true"
+          v-for="(item, i) in items"
+          :key="i"
+          :to="item.link"
+          router
+        >
+          <v-list-item-action>
+            <v-icon v-html="item.icon"></v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title"></v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
     <v-content>
       <slot/>
     </v-content>
-    <v-navigation-drawer
-      temporary
-      :right="right"
-      v-model="rightDrawer"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-tile @click="right = !right">
-          <v-list-tile-action>
-            <v-icon>compare_arrows</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
   </div>
 </template>

@@ -154,19 +154,22 @@ export default {
 </script>
 
 <template>
-  <v-layout justify-center>
-    <v-flex xs12 sm10 md8 lg6>
-      <v-card>
+  <v-row justify-center>
+    <v-col cols="12" sm10 md8 lg6>
+      <v-card
+        class="mx-auto"
+        max-width="600"
+      >
         <v-card-title>
-          <v-flex>
+          <v-col cols="3">
             <img src="@/assets/gCenterFavicon.png" height="48px"/>
-          </v-flex>
-          <v-flex v-if="isMobile">
+          </v-col>
+          <v-col v-if="isMobile">
             <p class="headline">{{ titleShort }}</p>
-          </v-flex>
-          <v-flex v-else>
+          </v-col>
+          <v-col v-else>
             <p class="headline">{{ title }}</p>
-          </v-flex>
+          </v-col>
         </v-card-title>
         <span class="pa-4">
           <strong class="indigo--text">สำหรับคีย์ผลงาน ชวนเปิดบ้านสวดธรรมจักร</strong>
@@ -199,43 +202,38 @@ export default {
               label="เลือกจังหวัดที่ตั้ง..."
               solo
             >
-              <template slot="no-data">
-                <v-list-tile>
-                  <v-list-tile-title>
+              <template v-slot:no-data>
+                <v-list-item>
+                  <v-list-item-title>
                     พิมพ์ชื่อศูนย์ตามอำเภอ
                     <strong>(ไม่ต้องพิมพ์"อำเภอ")</strong>
-                  </v-list-tile-title>
-                </v-list-tile>
+                  </v-list-item-title>
+                </v-list-item>
               </template>
               <template
-                slot="selection"
-                slot-scope="{ item, selected }"
+                v-slot:selection="{ attr, item, on, selected }"
               >
                 <v-chip
-                  :selected="selected"
+                  v-bind="attr"
+                  :input-value="selected"
                   color="light-blue darken-2"
                   class="white--text"
+                  v-on="on"
                 >
                   <v-icon left>business</v-icon>
                   <span v-text="item.address_lv2_name"></span>
                 </v-chip>
               </template>
-              <template
-                slot="item"
-                slot-scope="{ item, tile }"
-              >
-                <v-list-tile-avatar
+              <template v-slot:item="{ item }">
+                <v-list-item-avatar
                   color="indigo"
                   class="headline font-weight-light white--text"
                 >
                   {{ item.address_key.charAt(0) }}
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title v-text="item.address_lv2_name"></v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-icon>fa-google</v-icon>
-                </v-list-tile-action>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title v-text="item.address_lv2_name"></v-list-item-title>
+                </v-list-item-content>
               </template>
             </v-autocomplete>
             <v-divider class="mt-3" dark></v-divider>
@@ -255,39 +253,34 @@ export default {
               item-text="fullname"
               return-object
               label="ชื่อผู้นำบ้านสวดธรรมจักร"
-              box
+              filled
             >
-              <template slot="no-data">
-                <v-list-tile>
-                  <v-list-tile-title>
+              <template v-slot:no-data>
+                <v-list-item>
+                  <v-list-item-title>
                     พิมพ์ชื่อทีละตัว
                     <strong>(โดยไม่ต้องพิมพ์คำนำหน้า)</strong>
-                  </v-list-tile-title>
-                </v-list-tile>
+                  </v-list-item-title>
+                </v-list-item>
               </template>
               <template
-                slot="selection"
-                slot-scope="{ item, selected }"
+                v-slot:selection="{ attr, item, on, selected }"
               >
                 <v-chip
-                  :selected="selected"
+                  v-bind="attr"
+                  :input-value="selected"
                   color="blue darken-3"
                   class="white--text"
+                  v-on="on"
                 >
                   <v-icon left>person</v-icon>
                   <span v-text="item.fullname"></span>
                 </v-chip>
               </template>
-              <template
-                slot="item"
-                slot-scope="{ item, tile }"
-              >
-                <v-list-tile-content>
-                  <v-list-tile-title v-text="item.fullname"></v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-icon>fa-google</v-icon>
-                </v-list-tile-action>
+              <template v-slot:item="{ item }">
+                <v-list-item-content>
+                  <v-list-item-title v-text="item.fullname"></v-list-item-title>
+                </v-list-item-content>
               </template>
             </v-autocomplete>
             <v-divider class="mt-3" dark></v-divider>
@@ -311,7 +304,7 @@ export default {
           </v-card-text>
           <v-divider class="mt-4"></v-divider>
           <v-card-actions>
-            <v-btn color="blue darken-3" flat @click="resetForm">เคลียร์ฟอร์มกรอก</v-btn>
+            <v-btn color="blue darken-3" text @click="resetForm">เคลียร์ฟอร์มกรอก</v-btn>
             <v-spacer></v-spacer>
             <v-slide-x-reverse-transition>
               <v-tooltip
@@ -329,39 +322,39 @@ export default {
                 <span>Refresh form</span>
               </v-tooltip>
             </v-slide-x-reverse-transition>
-            <v-btn color="blue darken-3" flat @click="submit">ลงทะเบียน</v-btn>
+            <v-btn color="blue darken-3" text @click="submit">ลงทะเบียน</v-btn>
           </v-card-actions>
         </v-form>
       </v-card>
-    </v-flex>
+    </v-col>
     <v-dialog v-model="dialog" persistent max-width="400px">
       <v-card>
         <v-card-text>
           <v-container grid-list-md>
-            <v-layout column wrap align-center>
-              <v-flex xs12 sm6 md4>
+            <v-row column wrap align-center>
+              <v-col cols="12" sm6 md4>
                 <span class="headline">{{ registerName }}ได้ทำการลงทะเบียนแล้ว!</span>
-              </v-flex>
-              <v-flex>
+              </v-col>
+              <v-col>
                 <span>สำหรับผู้ที่ลงทะเบียนสามารถเข้าห้องไลน์ G-center กลางเพื่อรับทราบข้อมูลข่าวสารได้ 2 ช่องทาง คือ </span>
-              </v-flex>
-              <v-flex>
+              </v-col>
+              <v-col>
                 <span>-------กดที่ปุ่ม<strong class="indigo--text">สำหรับผู้ใช้มือถือ</strong> หรือ สแกน QRcode <strong class="indigo--text">สำหรับเว็บไซต์</strong>----------</span>
-              </v-flex>
-              <v-flex xs12 sm6 md4>
+              </v-col>
+              <v-col cols="12" sm6 md4>
                 <v-btn color="green white--text" href="https://line.me/ti/g2/cmyRwDMCluG-qIBOa55lzg">เข้าร่วม LINE Group</v-btn>
-              </v-flex>
+              </v-col>
               <v-responsive :aspect-ratio="1/0.5">
                 <img src="@/assets/qrLineGroup.jpg"/>
               </v-responsive>
-            </v-layout>
+            </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click.native="closeDialog">Close</v-btn>
+          <v-btn color="blue darken-1" text @click.native="closeDialog">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-layout>
+  </v-row>
 </template>
