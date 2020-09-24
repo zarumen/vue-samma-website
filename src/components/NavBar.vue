@@ -101,6 +101,7 @@ export default {
           v-for="(item, i) in items"
           :key="i"
           :to="item.link"
+          class="red--text"
           router
         >
           <v-list-item-action>
@@ -112,8 +113,8 @@ export default {
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-content>
+    <v-main>
       <slot/>
-    </v-content>
+    </v-main>
   </div>
 </template>

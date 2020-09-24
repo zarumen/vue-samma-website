@@ -4,8 +4,8 @@ import axiosDB from '@/utils/axios-db.js'
 export default {
   data () {
     return {
-      title: 'ลงทะเบียน บ้านสวดธรรมจักร',
-      titleShort: 'ลงทะเบียน บ้านสวดธรรมจักร',
+      title: 'ลงทะเบียน ผู้นำสวดธรรมจักร',
+      titleShort: 'ลงทะเบียน ผู้นำสวดธรรมจักร',
       errorText: 'กรุณากรอกข้อมูลในช่องที่กำหนด',
       isLoading: false,
       isLoading2: false,
@@ -178,14 +178,14 @@ export default {
           </v-row>
         </v-card-title>
         <span class="pa-4">
-          <strong class="indigo--text">สำหรับลงทะเบียนเปิดบ้านสวดธรรมจักร</strong>
+          <strong class="indigo--text">สำหรับลงทะเบียนเปิดผู้นำสวดธรรมจักร</strong>
         </span>
         <p class="px-5">
           <br />
           เมื่อได้รับธรรมาวุธ พร้อมทั้งใบสมัครให้ กรอกรายละเอียดส่วนตัว เพื่อใช้ในการลงทะเบียนกับทางส่วนกลาง
         </p>
         <p class="px-5">
-          เมื่อลงทะเบียนเสร็จแล้วท่านสามารถเข้าแอด <strong class="green--text">LINE กลุ่ม "บ้านสวดธรรมจักร"</strong> เพื่อสอบถามรายละเอียดกิจกรรมเพิ่มเติมต่อไป
+          เมื่อลงทะเบียนเสร็จแล้วท่านสามารถเข้าแอด <strong class="green--text">LINE กลุ่ม "ผู้นำสวดธรรมจักร"</strong> เพื่อสอบถามรายละเอียดกิจกรรมเพิ่มเติมต่อไป
         </p>
         <v-form ref="forms" lazy-validation>
           <v-card-text>
@@ -228,7 +228,7 @@ export default {
               v-model="lineId"
               :rules="[() => !!lineId || errorText]"
               :error-messages="errorMessages"
-              label="LINE ID สำหรับเข้ากลุ่ม บ้านสวดธรรมจักร"
+              label="LINE ID สำหรับเข้ากลุ่ม ผู้นำสวดธรรมจักร"
               required
             ></v-text-field>
             <v-text-field
@@ -323,7 +323,7 @@ export default {
                 <span class="headline">{{ registerName }}ได้ทำการลงทะเบียนแล้ว!</span>
               </v-col>
               <v-col>
-                <span>สำหรับผู้ที่ลงทะเบียนสามารถเข้าห้องไลน์ [บ้านสวดธรรมจักร] กลางเพื่อรับทราบข้อมูลข่าวสารได้ 2 ช่องทาง คือ </span>
+                <span>สำหรับผู้ที่ลงทะเบียนสามารถเข้าห้องไลน์ [ผู้นำสวดธรรมจักร] กลางเพื่อรับทราบข้อมูลข่าวสารได้ 2 ช่องทาง คือ </span>
               </v-col>
               <v-col>
                 <span>-------กดที่ปุ่ม<strong class="indigo--text">สำหรับผู้ใช้มือถือ</strong> หรือ สแกน QRcode <strong class="indigo--text">สำหรับเว็บไซต์</strong>----------</span>

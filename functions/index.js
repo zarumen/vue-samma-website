@@ -115,12 +115,12 @@ exports.aggregateUserTransactions = functions.firestore
       .catch(err => console.log(err))
   })
 
-  exports.aggregateMemberTransactions = functions.firestore
+exports.aggregateMemberTransactions = functions.firestore
   .document('dmjUserCenter/{userId}/members/{txId}')
   .onWrite((change, context) => {
-    const txId = context.params.txId;
-    const userId = context.params.userId;
-    const data = change.after.data();
+    const txId = context.params.txId
+    const userId = context.params.userId
+    const data = change.after.data()
 
     const db = admin.firestore()
     const batch = db.batch()
@@ -156,9 +156,9 @@ exports.aggregateUserTransactions = functions.firestore
         }
 
         // set in Parent Ref
-        batch.set(docRef, updateData, { merge:true })
+        batch.set(docRef, updateData, { merge: true })
         // set in Campus Ref
-        batch.set(campusRef, updateData, { merge:true })
+        batch.set(campusRef, updateData, { merge: true })
 
         return batch.commit()
           .then(() => {

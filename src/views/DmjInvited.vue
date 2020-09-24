@@ -5,8 +5,8 @@ import firestoreApp from '@/utils/firestore-config.js'
 export default {
   data () {
     return {
-      title: 'คีย์ผลงานชวนเปิดบ้านสวดธรรมจักร',
-      titleShort: 'ผลงานชวนเปิดบ้านสวดธรรมจักร',
+      title: 'คีย์ผลงานชวนทีมสวดธรรมจักร',
+      titleShort: 'ผลงานชวนทีมสวดธรรมจักร',
       errorText: 'กรุณากรอกข้อมูลในช่องที่กำหนด',
       isLoading: false,
       isLoading2: false,
@@ -172,11 +172,11 @@ export default {
           </v-col>
         </v-card-title>
         <span class="pa-4">
-          <strong class="indigo--text">สำหรับคีย์ผลงาน ชวนเปิดบ้านสวดธรรมจักร</strong>
+          <strong class="indigo--text">สำหรับคีย์ผลงาน ชวนทีมสวดธรรมจักร</strong>
         </span>
         <p class="px-5">
           <br />
-          กรอกผลงาน ที่ไปชวนเปิดบ้านสวดธรรมจักร ครบ 20 หลัง แต่คัดเลือกมาเฉพาะคนที่จะเป็นทีมงานผู้ช่วย 4 คนตามแบบฟอร์มข้างล่าง
+          กรอกผลงาน ที่ไปชวนทีมสวดธรรมจักร ครบ 5 คน แต่คัดเลือกมาเฉพาะคนที่จะเป็นทีมงานผู้ช่วย 4 คนตามแบบฟอร์มข้างล่าง
           เมื่อกรอกเสร็จติดต่อรับพระของขวัญที่ผู้ประสานงานจังหวัด ในเดือนถัดไป
         </p>
         <v-form ref="forms" lazy-validation>

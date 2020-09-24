@@ -59,11 +59,12 @@ export default {
             <v-row class="align-center">
               <v-card-text>
                 <v-col class="text-center">
-                  <h2>สำหรับข้อมูลผู้นำสวดธรรมจักร</h2>
+                  <h2>สำหรับผู้นำสวดธรรมจักร</h2>
                 </v-col>
               </v-card-text>
               <v-card-actions>
-                <v-btn text color="red">Click me!</v-btn>
+                <v-btn text color="red">ลงทะเบียน</v-btn>
+                <v-btn text color="red">กรอกข้อมูล ชวนเปิดบ้าน</v-btn>
               </v-card-actions>
             </v-row>
           </v-card>
